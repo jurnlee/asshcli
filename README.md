@@ -317,7 +317,11 @@ python scripts/asshcli.py manage teamkey list   # 看存过哪些团队
 
 ### 1. 安装
 
-**方式一：下载发布包**（最简单）
+**方式一：AI 安装**
+
+给AI发送：帮我安装 https://github.com/jurnlee/asshcli.git 这个技能到本地
+
+**方式二：下载发布包**
 
 从 Releases 下载 `asshcli-skill-vX.Y.Z.zip`，
 解压到 skills 目录：
@@ -325,7 +329,7 @@ python scripts/asshcli.py manage teamkey list   # 看存过哪些团队
 - 用户级（所有项目可用）：`~/.<agent>/skills/asshcli/`
 - 项目级（团队共享）：`<项目目录>/.<agent>/skills/asshcli/`
 
-**方式二：git clone**
+**方式三：git clone**
 
 ```bash
 git clone https://github.com/jurnlee/asshcli.git ~/.<agent>/skills/asshcli
