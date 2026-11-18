@@ -1,0 +1,61 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    name: ${{ matrix.os }} / py${{ matrix.python-version }}
+    strategy:
+      fail-fast: false
+      matrix:
+        # Windows 是主战场（launcher / console 链路只在 Windows 有意义），
+        # Ubuntu 验证跨平台路径与 POSIX 锁。Python 取最老支持版本 + 一个新 LTS。
+        os: [ubuntu-latest, windows-latest]
+        python-version: ['3.9', '3.12']
+        exclude:
+          # ubuntu-latest 镜像（26.04）已不提供 Python 3.9，钉到 24.04
+          - os: ubuntu-latest
+            python-version: '3.9'
+        include:
+          - os: ubuntu-24.04
+            python-version: '3.9'
+    runs-on: ${{ matrix.os }}
+    env:
+      # Windows runner 的管道默认是 cp1252，中文输出会直接炸
+      PYTHONUTF8: '1'
+      PYTHONIOENCODING: utf-8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: 安装依赖
+        run: pip install paramiko cryptography keyring tomli-w "tomli; python_version < '3.11'"
+      # 全部脚本自带 PASSED/FAILED 计数并 sys.exit(1) 于失败，CI 直接标红
+      # 按功能模块拆分，一个模块一个文件（见 tests/README.md）
+      - name: 跑测试
+        shell: bash
+        run: |
+          python tests/test_flow.py
+          python tests/test_lock.py
+          python tests/test_reexec.py
+          python tests/test_store.py
+          python tests/test_policy.py
+          python tests/test_redact.py
+          python tests/test_audit.py
+          python tests/test_vault.py
+          python tests/test_transport.py
+          python tests/test_protocol.py
+          python tests/test_output.py
+          python tests/test_console.py
+          python tests/test_integrity.py
+          python tests/test_sshkeys.py
+          python tests/test_manage.py
+          python tests/test_harden.py
+          python tests/test_runtime.py
+          python tests/test_paths.py
+          python tests/test_project.py
+          python tests/test_docs.py
