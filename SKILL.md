@@ -17,14 +17,21 @@ agent_created: true
 
 ## 调用
 
-脚本在本 skill 目录的 `scripts/asshcli.py`。
-当前目录不是 skill 目录时先 `cd`过去或拼绝对路径。
-`python` 不可用时尝试 `py` / `python3`，参数相同。
-如果 **三个命令本身不存在**（`command not found`），说明机器没装 Python—— 此时脚本根本没启动，不会有状态码。
-直接让用户装 Python 3.9+：python.org 安装包（Windows需勾选 Add python.exe to PATH），
-或机器上已有的包管理器（winget / apt / brew / **uv**）——**询问用户是否代装**, 如 `uv python install 3.12`，装完重试。
+脚本在本 skill 目录的 `scripts/asshcli.py`，当前目录不是 skill 目录时先 `cd`过去或拼绝对路径。
 
-亦可使用快速命令如 `uv run --python 3.12 --with paramiko --with cryptography --with keyring --with tomli --with tomli-w "~/.agent/skills/asshcli/scripts/asshcli.py" <options>`。
+先检查`python` / `py` / `python3`命令是否可用，可用则直接运行脚本，如果 **三个命令都不存在**（`command not found`），说明机器没装 Python。
+再检查已有的包管理器（winget / apt / brew / **uv**）。
+
+如果没有`uv`，直接**询问用户是否代装python**, 装完重试；
+如果有`uv`，可以使用快速命令，如
+```pwsh
+#若在Agent技能目录:
+$cli = "~/.agent/skills/asshcli/scripts/asshcli.py"
+#若在项目根目录：
+$cli = ".agents\skills\asshcli\scripts\asshcli.py"
+
+uv run --python 3.12 --with paramiko --with cryptography --with keyring --with tomli --with tomli-w $cli list
+```
 
 | 命令 | 说明 |
 |------|------|
